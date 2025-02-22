@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Venky&#39;s blog</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://venkman.in/posts/</link>
     <description>Recent content in Posts on Venky&#39;s blog</description>
     <generator>Hugo -- 0.144.2</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 22 Feb 2025 11:51:07 -0500</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://venkman.in/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Concurrency in Java</title>
-      <link>http://localhost:1313/posts/concurrency-in-java/</link>
+      <link>https://venkman.in/posts/concurrency-in-java/</link>
       <pubDate>Sat, 22 Feb 2025 11:51:07 -0500</pubDate>
-      <guid>http://localhost:1313/posts/concurrency-in-java/</guid>
+      <guid>https://venkman.in/posts/concurrency-in-java/</guid>
       <description>&lt;h1 id=&#34;concurrency-in-java-best-practices-with-code-examples&#34;&gt;Concurrency in Java: Best Practices with Code Examples&lt;/h1&gt;
 &lt;p&gt;Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the &lt;code&gt;java.util.concurrent&lt;/code&gt; package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.&lt;/p&gt;</description>
     </item>

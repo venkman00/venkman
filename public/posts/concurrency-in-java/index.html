@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Concurrency in Java | Venky&#39;s blog</title>
 <meta name="keywords" content="java, concurrency">
 <meta name="description" content="Concurrency in Java: Best Practices with Code Examples
 Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the java.util.concurrent package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.">
 <meta name="author" content="grok">
-<link rel="canonical" href="http://localhost:1313/posts/concurrency-in-java/">
+<link rel="canonical" href="https://venkman.in/posts/concurrency-in-java/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css" integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="icon" href="https://venkman.in/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://venkman.in/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://venkman.in/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://venkman.in/apple-touch-icon.png">
+<link rel="mask-icon" href="https://venkman.in/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/concurrency-in-java/">
+<link rel="alternate" hreflang="en" href="https://venkman.in/posts/concurrency-in-java/">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,7 +56,76 @@ Concurrency in Java enables multiple tasks to run simultaneously, enhancing appl
         }
 
     </style>
-</noscript>
+</noscript><meta property="og:url" content="https://venkman.in/posts/concurrency-in-java/">
+  <meta property="og:site_name" content="Venky&#39;s blog">
+  <meta property="og:title" content="Concurrency in Java">
+  <meta property="og:description" content="Concurrency in Java: Best Practices with Code Examples Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the java.util.concurrent package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-22T11:51:07-05:00">
+    <meta property="article:modified_time" content="2025-02-22T11:51:07-05:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="Concurrency">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Concurrency in Java">
+<meta name="twitter:description" content="Concurrency in Java: Best Practices with Code Examples
+Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the java.util.concurrent package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://venkman.in/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Concurrency in Java",
+      "item": "https://venkman.in/posts/concurrency-in-java/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Concurrency in Java",
+  "name": "Concurrency in Java",
+  "description": "Concurrency in Java: Best Practices with Code Examples Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the java.util.concurrent package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.\n",
+  "keywords": [
+    "java", "concurrency"
+  ],
+  "articleBody": "Concurrency in Java: Best Practices with Code Examples Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the java.util.concurrent package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.\nIntroduction to Concurrency in Java Concurrency refers to executing multiple tasks at the same time, leveraging threads in Java—lightweight processes that run in parallel. This capability is crucial for utilizing multi-core processors, improving resource efficiency, and enhancing responsiveness in applications handling multiple tasks or user requests.\nHowever, concurrency comes with pitfalls:\nRace conditions: Unpredictable outcomes when threads access shared data simultaneously. Deadlocks: Threads waiting indefinitely for each other to release resources. Memory visibility: Changes by one thread not visible to others without proper synchronization. Let’s dive into best practices to manage these issues effectively.\nSynchronizing Access to Shared Resources When multiple threads access shared data, synchronization ensures data consistency by controlling access.\nUsing Synchronization The synchronized keyword ensures that only one thread executes a method or block at a time, preventing race conditions.\nExample: Race Condition Without Synchronization\nHere’s a counter class where threads increment a shared variable:\npublic class Counter { private int count = 0; public void increment() { count++; // Not thread-safe } public int getCount() { return count; } public static void main(String[] args) throws InterruptedException { Counter counter = new Counter(); Runnable task = () -\u003e { for (int i = 0; i \u003c 1000; i++) counter.increment(); }; Thread t1 = new Thread(task); Thread t2 = new Thread(task); t1.start(); t2.start(); t1.join(); t2.join(); System.out.println(\"Final count: \" + counter.getCount()); // Expected: 2000, Actual: Varies } } Running this may yield a count less than 2000 due to race conditions—count++ isn’t atomic, and threads interleave operations.\nFixing with Synchronization\nAdd synchronized to ensure thread safety:\npublic class Counter { private int count = 0; public synchronized void increment() { count++; } public int getCount() { return count; } public static void main(String[] args) throws InterruptedException { Counter counter = new Counter(); Runnable task = () -\u003e { for (int i = 0; i \u003c 1000; i++) counter.increment(); }; Thread t1 = new Thread(task); Thread t2 = new Thread(task); t1.start(); t2.start(); t1.join(); t2.join(); System.out.println(\"Final count: \" + counter.getCount()); // Always 2000 } } Now, the method is thread-safe, and the count is accurate.\nBest Practice: Keep synchronized blocks small to minimize performance overhead.\nUsing Locks The Lock interface (e.g., ReentrantLock) offers more flexibility than synchronized, such as non-blocking lock attempts.\nExample: Using ReentrantLock\nimport java.util.concurrent.locks.Lock; import java.util.concurrent.locks.ReentrantLock; public class Counter { private int count = 0; private Lock lock = new ReentrantLock(); public void increment() { lock.lock(); try { count++; } finally { lock.unlock(); // Unlock in finally to ensure release } } public int getCount() { return count; } } Best Practice: Always unlock in a finally block to prevent lock retention if exceptions occur.\nConcurrent Collections Use thread-safe collections like ConcurrentHashMap from java.util.concurrent instead of non-thread-safe ones like HashMap.\nExample: Using ConcurrentHashMap\nimport java.util.concurrent.ConcurrentHashMap; import java.util.Map; public class ConcurrentMapExample { public static void main(String[] args) throws InterruptedException { Map\u003cString, Integer\u003e map = new ConcurrentHashMap\u003c\u003e(); Runnable task = () -\u003e { for (int i = 0; i \u003c 100; i++) { map.put(Thread.currentThread().getName() + i, i); } }; Thread t1 = new Thread(task); Thread t2 = new Thread(task); t1.start(); t2.start(); t1.join(); t2.join(); System.out.println(\"Map size: \" + map.size()); } } This safely handles concurrent modifications without explicit synchronization.\nBest Practice: Prefer concurrent collections for multi-threaded data sharing.\nDesigning for Concurrency Design choices can simplify concurrency and enhance scalability.\nImmutability Immutable objects, whose state cannot change after creation, are naturally thread-safe.\nExample: Immutable Class\npublic final class ImmutablePoint { private final int x; private final int y; public ImmutablePoint(int x, int y) { this.x = x; this.y = y; } public int getX() { return x; } public int getY() { return y; } } No synchronization is needed when sharing ImmutablePoint across threads.\nBest Practice: Use immutability to reduce synchronization needs.\nUsing ExecutorService The ExecutorService framework simplifies thread management with thread pools, avoiding manual thread creation.\nExample: Using ExecutorService\nimport java.util.concurrent.ExecutorService; import java.util.concurrent.Executors; public class ExecutorServiceExample { public static void main(String[] args) { ExecutorService executor = Executors.newFixedThreadPool(2); for (int i = 0; i \u003c 5; i++) { final int taskId = i; executor.submit(() -\u003e { System.out.println(\"Task \" + taskId + \" by \" + Thread.currentThread().getName()); }); } executor.shutdown(); } } This runs five tasks across two threads efficiently.\nBest Practice: Use ExecutorService for task execution and thread pooling.\nCommon Pitfalls and How to Avoid Them Concurrency introduces subtle bugs; here’s how to sidestep them.\nRace Conditions Addressed earlier, use synchronization, locks, or atomic variables like AtomicInteger.\nExample: Using AtomicInteger\nimport java.util.concurrent.atomic.AtomicInteger; public class AtomicExample { private AtomicInteger count = new AtomicInteger(0); public void increment() { count.incrementAndGet(); } public int getCount() { return count.get(); } } Best Practice: Use atomic variables for simple, thread-safe operations.\nDeadlocks Deadlocks occur when threads wait cyclically for resources.\nExample: Deadlock\npublic class DeadlockExample { private static final Object lock1 = new Object(); private static final Object lock2 = new Object(); public static void main(String[] args) { Thread t1 = new Thread(() -\u003e { synchronized (lock1) { try { Thread.sleep(100); } catch (Exception e) {} synchronized (lock2) { System.out.println(\"T1 done\"); } } }); Thread t2 = new Thread(() -\u003e { synchronized (lock2) { synchronized (lock1) { System.out.println(\"T2 done\"); } } }); t1.start(); t2.start(); } } Avoidance: Acquire locks in a consistent order or use tryLock() with timeouts.\nUsing Volatile Correctly The volatile keyword ensures variable visibility across threads but not atomicity.\nExample: Volatile Flag\npublic class VolatileExample { private volatile boolean running = true; public void start() { new Thread(() -\u003e { while (running) { /* Work */ } System.out.println(\"Stopped\"); }).start(); } public void stop() { running = false; } } Best Practice: Use volatile for visibility, not for atomic operations.\nAvoiding Deprecated Methods Avoid Thread.stop(), suspend(), and resume()—they’re unsafe. Use flags or interruption instead.\nTesting Concurrent Code Concurrency bugs are non-deterministic. Use:\nJUnit with multi-threading support. Tools like Thread Weaver. Stress testing under high load. Best Practice: Rigorously test under varied conditions.\nConclusion Concurrency in Java boosts performance but demands careful design. Key takeaways:\nUse ConcurrentHashMap and similar collections. Limit synchronization scope. Embrace immutability. Leverage ExecutorService. Apply volatile appropriately. Prevent deadlocks with consistent lock ordering. Test thoroughly. By adopting these practices, you’ll build robust, efficient, and thread-safe Java applications.\nThis blog post provides a practical guide to concurrency in Java, enriched with readable code examples and formatted for clarity using Markdown. Follow these best practices to master concurrent programming!\n",
+  "wordCount" : "1124",
+  "inLanguage": "en",
+  "datePublished": "2025-02-22T11:51:07-05:00",
+  "dateModified": "2025-02-22T11:51:07-05:00",
+  "author":{
+    "@type": "Person",
+    "name": "grok"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://venkman.in/posts/concurrency-in-java/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Venky's blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://venkman.in/favicon.ico"
+    }
+  }
+}
+</script>
 </head>
 
 <body class="" id="top">
@@ -74,7 +143,7 @@ Concurrency in Java enables multiple tasks to run simultaneously, enhancing appl
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Venky&#39;s blog (Alt + H)">Venky&#39;s blog</a>
+            <a href="https://venkman.in/" accesskey="h" title="Venky&#39;s blog (Alt + H)">Venky&#39;s blog</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -361,15 +430,15 @@ Concurrency in Java enables multiple tasks to run simultaneously, enhancing appl
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
-      <li><a href="http://localhost:1313/tags/concurrency/">Concurrency</a></li>
+      <li><a href="https://venkman.in/tags/java/">Java</a></li>
+      <li><a href="https://venkman.in/tags/concurrency/">Concurrency</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">Venky&#39;s blog</a></span> · 
+        <span>&copy; 2025 <a href="https://venkman.in/">Venky&#39;s blog</a></span> · 
 
     <span>
         Powered by

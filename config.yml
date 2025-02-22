@@ -1,0 +1,5 @@
+baseURL: https://venkman.in/
+languageCode: en-us
+title: Venky's blog
+
+theme: ["PaperMod"]

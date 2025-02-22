@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Concurrency in Java | Venky&#39;s blog</title>
+<meta name="keywords" content="java, concurrency">
+<meta name="description" content="Concurrency in Java">
+<meta name="author" content="grok">
+<link rel="canonical" href="https://canonical.url/to/page">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css" integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/concurrencyinjava/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Venky&#39;s blog (Alt + H)">Venky&#39;s blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Concurrency in Java
+    </h1>
+    <div class="post-description">
+      Concurrency in Java
+    </div>
+    <div class="post-meta"><span title='2025-02-22 11:30:03 +0000 +0000'>February 22, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1165 words&nbsp;·&nbsp;grok&nbsp;|&nbsp;<a href="https://github.com/%3cpath_to_repo%3e/content/ConcurrencyInJava.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction-to-concurrency-in-java">Introduction to Concurrency in Java</a></li>
+    <li><a href="#synchronizing-access-to-shared-resources">Synchronizing Access to Shared Resources</a>
+      <ul>
+        <li><a href="#using-synchronization">Using Synchronization</a></li>
+        <li><a href="#using-locks">Using Locks</a></li>
+        <li><a href="#concurrent-collections">Concurrent Collections</a></li>
+      </ul>
+    </li>
+    <li><a href="#designing-for-concurrency">Designing for Concurrency</a>
+      <ul>
+        <li><a href="#immutability">Immutability</a></li>
+        <li><a href="#using-executorservice">Using ExecutorService</a></li>
+      </ul>
+    </li>
+    <li><a href="#common-pitfalls-and-how-to-avoid-them">Common Pitfalls and How to Avoid Them</a>
+      <ul>
+        <li><a href="#race-conditions">Race Conditions</a></li>
+        <li><a href="#deadlocks">Deadlocks</a></li>
+        <li><a href="#using-volatile-correctly">Using Volatile Correctly</a></li>
+        <li><a href="#avoiding-deprecated-methods">Avoiding Deprecated Methods</a></li>
+      </ul>
+    </li>
+    <li><a href="#testing-concurrent-code">Testing Concurrent Code</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Below is a blog post on concurrency in Java, focusing on best practices and including easily readable code examples. The post is structured to guide developers through the essentials of writing efficient and thread-safe concurrent applications, using Markdown for clear formatting.</p>
+<hr>
+<h1 id="concurrency-in-java-best-practices-with-code-examples">Concurrency in Java: Best Practices with Code Examples<a hidden class="anchor" aria-hidden="true" href="#concurrency-in-java-best-practices-with-code-examples">#</a></h1>
+<p>Concurrency in Java enables multiple tasks to run simultaneously, enhancing application performance and responsiveness. Java offers robust tools for concurrency through threads, the <code>java.util.concurrent</code> package, and synchronization mechanisms. However, concurrency introduces challenges like race conditions and deadlocks, making it essential to follow best practices. In this blog post, we’ll explore these practices with clear explanations and practical code examples formatted in Markdown.</p>
+<h2 id="introduction-to-concurrency-in-java">Introduction to Concurrency in Java<a hidden class="anchor" aria-hidden="true" href="#introduction-to-concurrency-in-java">#</a></h2>
+<p>Concurrency refers to executing multiple tasks at the same time, leveraging threads in Java—lightweight processes that run in parallel. This capability is crucial for utilizing multi-core processors, improving resource efficiency, and enhancing responsiveness in applications handling multiple tasks or user requests.</p>
+<p>However, concurrency comes with pitfalls:</p>
+<ul>
+<li><strong>Race conditions</strong>: Unpredictable outcomes when threads access shared data simultaneously.</li>
+<li><strong>Deadlocks</strong>: Threads waiting indefinitely for each other to release resources.</li>
+<li><strong>Memory visibility</strong>: Changes by one thread not visible to others without proper synchronization.</li>
+</ul>
+<p>Let’s dive into best practices to manage these issues effectively.</p>
+<h2 id="synchronizing-access-to-shared-resources">Synchronizing Access to Shared Resources<a hidden class="anchor" aria-hidden="true" href="#synchronizing-access-to-shared-resources">#</a></h2>
+<p>When multiple threads access shared data, synchronization ensures data consistency by controlling access.</p>
+<h3 id="using-synchronization">Using Synchronization<a hidden class="anchor" aria-hidden="true" href="#using-synchronization">#</a></h3>
+<p>The <code>synchronized</code> keyword ensures that only one thread executes a method or block at a time, preventing race conditions.</p>
+<p><strong>Example: Race Condition Without Synchronization</strong></p>
+<p>Here’s a counter class where threads increment a shared variable:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Counter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">increment</span>() {
+</span></span><span style="display:flex;"><span>        count<span style="color:#f92672">++</span>;  <span style="color:#75715e">// Not thread-safe</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCount</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> count;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        Counter counter <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Counter();
+</span></span><span style="display:flex;"><span>        Runnable task <span style="color:#f92672">=</span> () <span style="color:#f92672">-&gt;</span> { <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 1000; i<span style="color:#f92672">++</span>) counter.<span style="color:#a6e22e">increment</span>(); };
+</span></span><span style="display:flex;"><span>        Thread t1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(task);
+</span></span><span style="display:flex;"><span>        Thread t2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(task);
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Final count: &#34;</span> <span style="color:#f92672">+</span> counter.<span style="color:#a6e22e">getCount</span>());  <span style="color:#75715e">// Expected: 2000, Actual: Varies</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Running this may yield a <code>count</code> less than 2000 due to race conditions—<code>count++</code> isn’t atomic, and threads interleave operations.</p>
+<p><strong>Fixing with Synchronization</strong></p>
+<p>Add <code>synchronized</code> to ensure thread safety:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Counter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">increment</span>() {
+</span></span><span style="display:flex;"><span>        count<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCount</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> count;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        Counter counter <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Counter();
+</span></span><span style="display:flex;"><span>        Runnable task <span style="color:#f92672">=</span> () <span style="color:#f92672">-&gt;</span> { <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 1000; i<span style="color:#f92672">++</span>) counter.<span style="color:#a6e22e">increment</span>(); };
+</span></span><span style="display:flex;"><span>        Thread t1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(task);
+</span></span><span style="display:flex;"><span>        Thread t2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(task);
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Final count: &#34;</span> <span style="color:#f92672">+</span> counter.<span style="color:#a6e22e">getCount</span>());  <span style="color:#75715e">// Always 2000</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now, the method is thread-safe, and the count is accurate.</p>
+<p><strong>Best Practice</strong>: Keep synchronized blocks small to minimize performance overhead.</p>
+<h3 id="using-locks">Using Locks<a hidden class="anchor" aria-hidden="true" href="#using-locks">#</a></h3>
+<p>The <code>Lock</code> interface (e.g., <code>ReentrantLock</code>) offers more flexibility than <code>synchronized</code>, such as non-blocking lock attempts.</p>
+<p><strong>Example: Using <code>ReentrantLock</code></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.Lock;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.ReentrantLock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Counter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Lock lock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReentrantLock();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">increment</span>() {
+</span></span><span style="display:flex;"><span>        lock.<span style="color:#a6e22e">lock</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            count<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            lock.<span style="color:#a6e22e">unlock</span>();  <span style="color:#75715e">// Unlock in finally to ensure release</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCount</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> count;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Best Practice</strong>: Always unlock in a <code>finally</code> block to prevent lock retention if exceptions occur.</p>
+<h3 id="concurrent-collections">Concurrent Collections<a hidden class="anchor" aria-hidden="true" href="#concurrent-collections">#</a></h3>
+<p>Use thread-safe collections like <code>ConcurrentHashMap</code> from <code>java.util.concurrent</code> instead of non-thread-safe ones like <code>HashMap</code>.</p>
+<p><strong>Example: Using <code>ConcurrentHashMap</code></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.ConcurrentHashMap;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Map;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ConcurrentMapExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        Map<span style="color:#f92672">&lt;</span>String, Integer<span style="color:#f92672">&gt;</span> map <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>        Runnable task <span style="color:#f92672">=</span> () <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 100; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                map.<span style="color:#a6e22e">put</span>(Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getName</span>() <span style="color:#f92672">+</span> i, i);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        Thread t1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(task);
+</span></span><span style="display:flex;"><span>        Thread t2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(task);
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Map size: &#34;</span> <span style="color:#f92672">+</span> map.<span style="color:#a6e22e">size</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This safely handles concurrent modifications without explicit synchronization.</p>
+<p><strong>Best Practice</strong>: Prefer concurrent collections for multi-threaded data sharing.</p>
+<h2 id="designing-for-concurrency">Designing for Concurrency<a hidden class="anchor" aria-hidden="true" href="#designing-for-concurrency">#</a></h2>
+<p>Design choices can simplify concurrency and enhance scalability.</p>
+<h3 id="immutability">Immutability<a hidden class="anchor" aria-hidden="true" href="#immutability">#</a></h3>
+<p>Immutable objects, whose state cannot change after creation, are naturally thread-safe.</p>
+<p><strong>Example: Immutable Class</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ImmutablePoint</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> y;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ImmutablePoint</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> y) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> x;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">=</span> y;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getX</span>() { <span style="color:#66d9ef">return</span> x; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getY</span>() { <span style="color:#66d9ef">return</span> y; }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>No synchronization is needed when sharing <code>ImmutablePoint</code> across threads.</p>
+<p><strong>Best Practice</strong>: Use immutability to reduce synchronization needs.</p>
+<h3 id="using-executorservice">Using ExecutorService<a hidden class="anchor" aria-hidden="true" href="#using-executorservice">#</a></h3>
+<p>The <code>ExecutorService</code> framework simplifies thread management with thread pools, avoiding manual thread creation.</p>
+<p><strong>Example: Using <code>ExecutorService</code></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.ExecutorService;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.Executors;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExecutorServiceExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        ExecutorService executor <span style="color:#f92672">=</span> Executors.<span style="color:#a6e22e">newFixedThreadPool</span>(2);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 5; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> taskId <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>            executor.<span style="color:#a6e22e">submit</span>(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Task &#34;</span> <span style="color:#f92672">+</span> taskId <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; by &#34;</span> <span style="color:#f92672">+</span> Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getName</span>());
+</span></span><span style="display:flex;"><span>            });
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        executor.<span style="color:#a6e22e">shutdown</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This runs five tasks across two threads efficiently.</p>
+<p><strong>Best Practice</strong>: Use <code>ExecutorService</code> for task execution and thread pooling.</p>
+<h2 id="common-pitfalls-and-how-to-avoid-them">Common Pitfalls and How to Avoid Them<a hidden class="anchor" aria-hidden="true" href="#common-pitfalls-and-how-to-avoid-them">#</a></h2>
+<p>Concurrency introduces subtle bugs; here’s how to sidestep them.</p>
+<h3 id="race-conditions">Race Conditions<a hidden class="anchor" aria-hidden="true" href="#race-conditions">#</a></h3>
+<p>Addressed earlier, use synchronization, locks, or atomic variables like <code>AtomicInteger</code>.</p>
+<p><strong>Example: Using <code>AtomicInteger</code></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.atomic.AtomicInteger;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AtomicExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> AtomicInteger count <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger(0);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">increment</span>() {
+</span></span><span style="display:flex;"><span>        count.<span style="color:#a6e22e">incrementAndGet</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCount</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> count.<span style="color:#a6e22e">get</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Best Practice</strong>: Use atomic variables for simple, thread-safe operations.</p>
+<h3 id="deadlocks">Deadlocks<a hidden class="anchor" aria-hidden="true" href="#deadlocks">#</a></h3>
+<p>Deadlocks occur when threads wait cyclically for resources.</p>
+<p><strong>Example: Deadlock</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DeadlockExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Object lock1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Object lock2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        Thread t1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">synchronized</span> (lock1) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">try</span> { Thread.<span style="color:#a6e22e">sleep</span>(100); } <span style="color:#66d9ef">catch</span> (Exception e) {}
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">synchronized</span> (lock2) { System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;T1 done&#34;</span>); }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        Thread t2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">synchronized</span> (lock2) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">synchronized</span> (lock1) { System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;T2 done&#34;</span>); }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        t1.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        t2.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Avoidance</strong>: Acquire locks in a consistent order or use <code>tryLock()</code> with timeouts.</p>
+<h3 id="using-volatile-correctly">Using Volatile Correctly<a hidden class="anchor" aria-hidden="true" href="#using-volatile-correctly">#</a></h3>
+<p>The <code>volatile</code> keyword ensures variable visibility across threads but not atomicity.</p>
+<p><strong>Example: Volatile Flag</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">VolatileExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">boolean</span> running <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (running) { <span style="color:#75715e">/* Work */</span> }
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Stopped&#34;</span>);
+</span></span><span style="display:flex;"><span>        }).<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">stop</span>() {
+</span></span><span style="display:flex;"><span>        running <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Best Practice</strong>: Use <code>volatile</code> for visibility, not for atomic operations.</p>
+<h3 id="avoiding-deprecated-methods">Avoiding Deprecated Methods<a hidden class="anchor" aria-hidden="true" href="#avoiding-deprecated-methods">#</a></h3>
+<p>Avoid <code>Thread.stop()</code>, <code>suspend()</code>, and <code>resume()</code>—they’re unsafe. Use flags or interruption instead.</p>
+<h2 id="testing-concurrent-code">Testing Concurrent Code<a hidden class="anchor" aria-hidden="true" href="#testing-concurrent-code">#</a></h2>
+<p>Concurrency bugs are non-deterministic. Use:</p>
+<ul>
+<li>JUnit with multi-threading support.</li>
+<li>Tools like <code>Thread Weaver</code>.</li>
+<li>Stress testing under high load.</li>
+</ul>
+<p><strong>Best Practice</strong>: Rigorously test under varied conditions.</p>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p>Concurrency in Java boosts performance but demands careful design. Key takeaways:</p>
+<ul>
+<li>Use <code>ConcurrentHashMap</code> and similar collections.</li>
+<li>Limit synchronization scope.</li>
+<li>Embrace immutability.</li>
+<li>Leverage <code>ExecutorService</code>.</li>
+<li>Apply <code>volatile</code> appropriately.</li>
+<li>Prevent deadlocks with consistent lock ordering.</li>
+<li>Test thoroughly.</li>
+</ul>
+<p>By adopting these practices, you’ll build robust, efficient, and thread-safe Java applications.</p>
+<hr>
+<p>This blog post provides a practical guide to concurrency in Java, enriched with readable code examples and formatted for clarity using Markdown. Follow these best practices to master concurrent programming!</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+      <li><a href="http://localhost:1313/tags/concurrency/">Concurrency</a></li>
+    </ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Venky&#39;s blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
